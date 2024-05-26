@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Proyecto2Moviles</string>
+    <string name="title_activity_screen_principal">ScreenPrincipal</string>
+    <string name="title_activity_training_screen_view_model">TrainingScreenViewModel</string>
+    <string name="title_activity_prview_model">PRViewModel</string>
+    <string name="title_activity_calc_dumbbell_view_model">CalcDumbbellViewModel</string>
+</resources>
