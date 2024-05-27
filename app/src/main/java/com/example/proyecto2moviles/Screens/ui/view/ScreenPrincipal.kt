@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -32,53 +35,64 @@ import com.example.proyecto2moviles.Screens.ui.viewModel.TrainingScreenViewModel
 
 @Composable
 fun ScreenPrincipal(activity: Activity) {
-    Column(
+
+    val backgroundPainter: Painter = painterResource(id = R.drawable.gym2)
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.Black)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Screen Principal",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
+        Image(
+            painter = backgroundPainter,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
         )
-        Spacer(modifier = Modifier.height(16.dp))
 
-        // Primera fila de botones
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            BotonConImage(activity, R.drawable.training, "Training"){
-                val navigate = Intent(activity, TrainingScreenViewModel::class.java)
-                activity.startActivity(navigate)
-            }
-            BotonConImage(activity, R.drawable.pr, "Personal Record"){
-                val navigate = Intent(activity, PRScreenViewModel::class.java)
-                activity.startActivity(navigate)
-            }
-        }
 
-        // Espaciador entre las filas
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Segunda fila de botones
-        Row(
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            BotonConImage(activity, R.drawable.dumbbell, "Dumbbell Calculate"){
-                val navigate = Intent(activity, CalcDumbbellScreenViewModel::class.java)
-                activity.startActivity(navigate)
+            // Primera fila de botones
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                BotonConImage(activity, R.drawable.training, "Training") {
+                    val navigate = Intent(activity, TrainingScreenViewModel::class.java)
+                    activity.startActivity(navigate)
+                }
+                BotonConImage(activity, R.drawable.pr, "Personal Record") {
+                    val navigate = Intent(activity, PRScreenViewModel::class.java)
+                    activity.startActivity(navigate)
+                }
             }
-            BotonConImage(activity, R.drawable.exit, "Exit") {
-                activity.finishAffinity() // Acción para cerrar la aplicación
+
+            // Espaciador entre las filas
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Segunda fila de botones
+            Row(
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                BotonConImage(activity, R.drawable.dumbbell, "Dumbbell Calculate") {
+                    val navigate = Intent(activity, CalcDumbbellScreenViewModel::class.java)
+                    activity.startActivity(navigate)
+                }
+                BotonConImage(activity, R.drawable.exit, "Exit") {
+                    activity.finishAffinity() // Acción para cerrar la aplicación
+                }
             }
         }
     }
