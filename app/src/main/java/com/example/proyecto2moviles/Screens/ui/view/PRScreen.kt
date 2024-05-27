@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -70,19 +72,20 @@ fun ExerciseInputField(label: String, value: TextFieldValue, onValueChange: (Tex
         OutlinedTextField(
             value = value,
             onValueChange = { newValue ->
-                // Filtrar para que solo se acepten números
-                val filteredValue = newValue.text.filter { it.isDigit() }
-                onValueChange(TextFieldValue(filteredValue))
+                // No filtrar para permitir la eliminación de caracteres
+                onValueChange(newValue)
             },
-            label = { Text(label, color = Color.White)},
+            label = { Text(label, color = Color.White) },
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = Color.White,
                 unfocusedBorderColor = Color.White,
                 cursorColor = Color.White
             ),
+            textStyle = TextStyle(color = Color.White),  // Establecer el color de texto en blanco
             modifier = Modifier.weight(1f),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )
+
         Spacer(modifier = Modifier.width(8.dp))
 
         Button(onClick = {
