@@ -1,14 +1,31 @@
 package com.example.proyecto2moviles.Screens.ui.view
 
-import android.app.Activity
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,11 +34,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.proyecto2moviles.Data.model.Training
 import com.example.proyecto2moviles.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import java.util.Calendar
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun TrainingScreen(activity: Activity) {
+fun TrainingScreen(databaseReference: DatabaseReference) {
+    var trainingList by mutableStateOf<List<Training>>(emptyList())
+
+    var database: DatabaseReference = FirebaseDatabase.getInstance().reference.child("Training")
+
+    database.addValueEventListener(object : ValueEventListener {
+        override fun onDataChange(snapshot: DataSnapshot) {
+            val list = mutableListOf<Training>()
+            for (data in snapshot.children) {
+                val training = data.getValue(Training::class.java)
+                training?.let {
+                    list.add(it)
+                }
+            }
+            trainingList = list
+        }
+
+        override fun onCancelled(error: DatabaseError) {
+
+        }
+    })
+
     var selectedDate by remember { mutableStateOf("") }
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
@@ -85,67 +130,29 @@ fun TrainingScreen(activity: Activity) {
             if (selectedDate.isNotEmpty()) {
                 Text(text = "Selected Date: $selectedDate")
                 Spacer(modifier = Modifier.height(16.dp))
-                ExerciseList(selectedDate)
+                LazyColumn {
+                    items(trainingList) { training ->
+                        TrainingItem(training)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ExerciseList(date: String) {
-    val exercises = listOf(
-        Exercise("Push Ups", "Do 3 sets of 15 reps", "Chest", "Standard"),
-        Exercise("Squats", "Do 3 sets of 20 reps", "Legs", "Bodyweight"),
-        Exercise("Plank", "Hold for 1 minute", "Core", "Standard"),
-        Exercise("Bicep Curls", "Do 3 sets of 12 reps", "Arms", "Dumbbells"),
-        Exercise("Lunges", "Do 3 sets of 15 reps", "Legs", "Bodyweight"),
-        Exercise("Deadlifts", "Do 3 sets of 8 reps", "Legs", "Barbell"),
-        Exercise("Pull Ups", "Do 3 sets of 10 reps", "Back", "Bodyweight"),
-        Exercise("Dips", "Do 3 sets of 12 reps", "Triceps", "Parallel Bars"),
-        Exercise("Shoulder Press", "Do 3 sets of 12 reps", "Shoulders", "Dumbbells"),
-        Exercise("Leg Press", "Do 3 sets of 15 reps", "Legs", "Machine"),
-        Exercise("Chest Flys", "Do 3 sets of 12 reps", "Chest", "Cable Machine"),
-        Exercise("Hammer Curls", "Do 3 sets of 10 reps", "Arms", "Dumbbells"),
-        Exercise("Leg Extensions", "Do 3 sets of 15 reps", "Legs", "Machine"),
-        Exercise("Seated Row", "Do 3 sets of 12 reps", "Back", "Cable Machine"),
-        Exercise("Calf Raises", "Do 3 sets of 20 reps", "Legs", "Bodyweight"),
-        Exercise("Crunches", "Do 3 sets of 20 reps", "Core", "Bodyweight"),
-        Exercise("Russian Twists", "Do 3 sets of 15 reps", "Core", "Medicine Ball"),
-        Exercise("Cable Triceps Pushdown", "Do 3 sets of 12 reps", "Triceps", "Cable Machine"),
-        Exercise("Leg Curl", "Do 3 sets of 15 reps", "Legs", "Machine"),
-        Exercise("Reverse Flys", "Do 3 sets of 12 reps", "Back", "Dumbbells")
-    )
-
-    LazyColumn {
-        item {
-            Text(text = "Exercises for $date:")
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        items(exercises.size) { index ->
-            ExerciseItem(exercises[index])
-        }
-    }
-}
-
-@Composable
-fun ExerciseItem(exercise: Exercise) {
+fun TrainingItem(training: Training) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(8.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = exercise.name, style = MaterialTheme.typography.headlineLarge)
-            Text(text = "Description: ${exercise.description}")
-            Text(text = "Muscle Group: ${exercise.muscleGroup}")
-            Text(text = "Variant: ${exercise.variant}")
+            Text(text = training.name, style = MaterialTheme.typography.headlineLarge)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Description: ${training.description}")
+            Text(text = "Muscle Group: ${training.muscleGroup}")
+            Text(text = "Variant: ${training.variant}")
         }
     }
 }
-
-data class Exercise(
-    val name: String,
-    val description: String,
-    val muscleGroup: String,
-    val variant: String
-)

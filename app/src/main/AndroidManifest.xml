@@ -33,7 +33,7 @@
             android:label="@string/title_activity_screen_principal"
             android:theme="@style/Theme.Proyecto2Moviles" />
         <activity
-            android:name=".Login.ui.LoginViewModel"
+            android:name=".Login.ui.viewModel.LoginViewModel"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Proyecto2Moviles">

@@ -1,8 +1,7 @@
-package com.example.proyecto2moviles.Login.ui
+package com.example.proyecto2moviles.Login.ui.view
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -144,7 +143,6 @@ fun LoginScreen(context: Context) {
                 }
 
                 if (isValid) {
-                    Log.i("Credential", "Email : $email Password : $password")
                     val navigate = Intent(context, ScreenPrincipalViewModel::class.java)
                     context.startActivity(navigate)
                 }
