@@ -34,21 +34,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyecto2moviles.Login.ui.viewModel.LoginViewModel
 import com.example.proyecto2moviles.R
 import com.example.proyecto2moviles.Screens.ui.viewModel.ScreenPrincipalViewModel
+import com.google.firebase.database.DatabaseReference
+import com.google.gson.Gson
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(context: Context) {
+fun LoginScreen(context: Context, databaseReference: DatabaseReference) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
+    var loginError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black) // Establecer fondo negro
+            .background(Color.Black)
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -65,14 +69,14 @@ fun LoginScreen(context: Context) {
             text = "Welcome",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.White // Color blanco para el texto
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
             text = "Login to your account",
-            color = Color.White // Color blanco para el texto
+            color = Color.White
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -82,6 +86,7 @@ fun LoginScreen(context: Context) {
             onValueChange = {
                 email = it
                 emailError = null
+                loginError = null
             },
             label = { Text(text = "Email address", color = Color.White) },
             isError = emailError != null,
@@ -108,6 +113,7 @@ fun LoginScreen(context: Context) {
             onValueChange = {
                 password = it
                 passwordError = null
+                loginError = null
             },
             label = { Text(text = "Password", color = Color.White) },
             visualTransformation = PasswordVisualTransformation(),
@@ -130,6 +136,10 @@ fun LoginScreen(context: Context) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        if (loginError != null) {
+            Text(text = loginError!!, color = Color.Red, fontSize = 12.sp)
+        }
+
         Button(
             onClick = {
                 var isValid = true
@@ -143,8 +153,19 @@ fun LoginScreen(context: Context) {
                 }
 
                 if (isValid) {
-                    val navigate = Intent(context, ScreenPrincipalViewModel::class.java)
-                    context.startActivity(navigate)
+                    val loginViewModel = LoginViewModel()
+                    loginViewModel.loginUser(email, password) { success, error, user ->
+                        if (success && user != null) {
+                            val gson = Gson()
+                            val userJson = gson.toJson(user)
+                            val navigate = Intent(context, ScreenPrincipalViewModel::class.java).apply {
+                                putExtra("user", userJson)
+                            }
+                            context.startActivity(navigate)
+                        } else {
+                            loginError = error
+                        }
+                    }
                 }
             },
             modifier = Modifier
@@ -162,7 +183,7 @@ fun LoginScreen(context: Context) {
                 disabledContentColor = Color.White
             )
         ) {
-            Text(text = "Login", color = Color.White) // Color blanco para el texto del botón
+            Text(text = "Login", color = Color.White)
         }
     }
 }

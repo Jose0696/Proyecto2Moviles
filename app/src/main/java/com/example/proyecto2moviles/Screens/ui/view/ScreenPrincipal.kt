@@ -25,16 +25,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyecto2moviles.Data.model.User
 import com.example.proyecto2moviles.R
 import com.example.proyecto2moviles.Screens.ui.viewModel.CalcDumbbellScreenViewModel
 import com.example.proyecto2moviles.Screens.ui.viewModel.PRScreenViewModel
 import com.example.proyecto2moviles.Screens.ui.viewModel.TrainingScreenViewModel
 
+import com.google.gson.Gson
+
+
 @Composable
-fun ScreenPrincipal(activity: Activity) {
+fun ScreenPrincipal(activity: Activity, user: User) {
 
     val backgroundPainter: Painter = painterResource(id = R.drawable.gym2)
 
@@ -58,6 +61,7 @@ fun ScreenPrincipal(activity: Activity) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(text = "Wellcome ${user.name} ", color = Color.White, fontSize = 25.sp)
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -72,7 +76,11 @@ fun ScreenPrincipal(activity: Activity) {
                     activity.startActivity(navigate)
                 }
                 BotonConImage(activity, R.drawable.pr, "Personal Record") {
-                    val navigate = Intent(activity, PRScreenViewModel::class.java)
+                    val gson = Gson()
+                    val userJson = gson.toJson(user)
+                    val navigate = Intent(activity, PRScreenViewModel::class.java).apply {
+                        putExtra("user", userJson)
+                    }
                     activity.startActivity(navigate)
                 }
             }
@@ -91,7 +99,7 @@ fun ScreenPrincipal(activity: Activity) {
                     activity.startActivity(navigate)
                 }
                 BotonConImage(activity, R.drawable.exit, "Exit") {
-                    activity.finishAffinity() // Acción para cerrar la aplicación
+                    activity.finishAffinity()
                 }
             }
         }
@@ -111,7 +119,7 @@ fun BotonConImage(activity: Activity, imageRes: Int, text: String, onClick: (() 
         ),
         modifier = Modifier
             .padding(8.dp)
-            .size(120.dp) // Ajusta el tamaño del botón según tus necesidades
+            .size(120.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
@@ -119,12 +127,12 @@ fun BotonConImage(activity: Activity, imageRes: Int, text: String, onClick: (() 
             Image(
                 painter = painterResource(id = imageRes),
                 contentDescription = text,
-                modifier = Modifier.size(60.dp) // Ajusta el tamaño de la imagen
+                modifier = Modifier.size(60.dp)
             )
             Text(
                 text = text,
                 color = Color.White,
-                fontSize = 14.sp // Ajusta el tamaño del texto
+                fontSize = 14.sp
             )
         }
     }

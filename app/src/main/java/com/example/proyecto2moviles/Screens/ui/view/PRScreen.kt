@@ -1,112 +1,99 @@
 package com.example.proyecto2moviles.Screens.ui.view
 
-import android.app.Activity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.proyecto2moviles.Data.model.User
+import com.google.firebase.database.DatabaseReference
 
 @Composable
-fun PRScreen(activity: Activity){
-    var benchPress by remember { mutableStateOf(TextFieldValue("")) }
-    var shoulderPress by remember { mutableStateOf(TextFieldValue("")) }
-    var snatch by remember { mutableStateOf(TextFieldValue("")) }
-    var clean by remember { mutableStateOf(TextFieldValue("")) }
-    var deadlift by remember { mutableStateOf(TextFieldValue("")) }
+fun PRScreen(user: User, databaseReference: DatabaseReference) {
+    var benchPress by remember { mutableIntStateOf(user.benchPress) }
+    var shoulderPress by remember { mutableIntStateOf(user.shoulderPress) }
+    var snatch by remember { mutableIntStateOf(user.snatch) }
+    var clean by remember { mutableIntStateOf(user.clean) }
+    var deadLift by remember { mutableIntStateOf(user.deadLift) }
+
+    fun updateUserField(field: String, value: Int) {
+        databaseReference.child(user.id).child(field).setValue(value)
+    }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
-
-        verticalArrangement = Arrangement.Center,
+            .background(Color.Black)
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Personal Record", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp), color = Color.White)
+        Text(text = "Personal Records", fontSize = 24.sp, color = Color.White)
 
-        ExerciseInputField("Bench Press", benchPress) { benchPress = it }
-        ExerciseInputField("Shoulder Press", shoulderPress) { shoulderPress = it }
-        ExerciseInputField("Snatch", snatch) { snatch = it }
-        ExerciseInputField("Clean", clean) { clean = it }
-        ExerciseInputField("Deadlift", deadlift) { deadlift = it }
+        RecordField(label = "Bench Press", value = benchPress) { newValue ->
+            benchPress = newValue
+            updateUserField("benchPress", newValue)
+        }
+
+        RecordField(label = "Shoulder Press", value = shoulderPress) { newValue ->
+            shoulderPress = newValue
+            updateUserField("shoulderPress", newValue)
+        }
+
+        RecordField(label = "Snatch", value = snatch) { newValue ->
+            snatch = newValue
+            updateUserField("snatch", newValue)
+        }
+
+        RecordField(label = "Clean", value = clean) { newValue ->
+            clean = newValue
+            updateUserField("clean", newValue)
+        }
+
+        RecordField(label = "Deadlift", value = deadLift) { newValue ->
+            deadLift = newValue
+            updateUserField("deadLift", newValue)
+        }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExerciseInputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 10.dp),
-        verticalAlignment = Alignment.CenterVertically
+fun RecordField(label: String, value: Int, onValueChange: (Int) -> Unit) {
+    var inputValue by remember { mutableStateOf(value.toString()) }
+
+    Column(
+        modifier = Modifier.padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = { newValue ->
-                // No filtrar para permitir la eliminación de caracteres
-                onValueChange(newValue)
-            },
-            label = { Text(label, color = Color.White) },
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = Color.White,
-                unfocusedBorderColor = Color.White,
-                cursorColor = Color.White
-            ),
-            textStyle = TextStyle(color = Color.White),  // Establecer el color de texto en blanco
-            modifier = Modifier.weight(1f),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
-        )
+        Text(text = "$label: $value lb", color = Color.White)
 
-        Spacer(modifier = Modifier.width(8.dp))
-
-        Button(onClick = {
-            // Manejar la acción del botón individual aquí
-        },
-            modifier = Modifier
-                .height(40.dp)
-                .width(100.dp),
-            shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 10.dp),
-            enabled = true,
-            elevation = ButtonDefaults.buttonElevation(
-                defaultElevation = 30.dp
-            ),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFC5F2D),
-                contentColor = Color.Green,
-                disabledContainerColor = Color.LightGray,
-                disabledContentColor = Color.White
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(
+                value = inputValue,
+                onValueChange = { newValue ->
+                    inputValue = newValue
+                    onValueChange(newValue.toIntOrNull() ?: value)
+                },
+                modifier = Modifier
+                    .width(100.dp)
+                    .background(Color.White),
+                textStyle = LocalTextStyle.current.copy(color = Color.Black)
             )
-            ) {
-            Text("Save", color = Color.White)
         }
     }
 }
