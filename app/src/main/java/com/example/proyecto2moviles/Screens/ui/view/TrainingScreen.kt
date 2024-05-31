@@ -28,12 +28,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.proyecto2moviles.Data.model.Training
 import com.example.proyecto2moviles.R
 import com.google.firebase.database.DataSnapshot
@@ -96,7 +99,19 @@ fun TrainingScreen(databaseReference: DatabaseReference) {
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
-
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 1.0f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 1.0f)
+                        )
+                    )
+                )
+        )
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -104,6 +119,10 @@ fun TrainingScreen(databaseReference: DatabaseReference) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Text(text = "Training", color = Color.White, fontSize = 28.sp)
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Button(onClick = {
                 datePickerDialog.show()
             },
@@ -128,7 +147,7 @@ fun TrainingScreen(databaseReference: DatabaseReference) {
             Spacer(modifier = Modifier.height(16.dp))
 
             if (selectedDate.isNotEmpty()) {
-                Text(text = "Selected Date: $selectedDate")
+                Text(text = "Selected Date: $selectedDate", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Black)
                 Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn {
                     items(trainingList) { training ->
