@@ -61,7 +61,7 @@ fun ScreenPrincipal(activity: Activity, user: User) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Wellcome ${user.name} ", color = Color.White, fontSize = 28.sp)
+            Text(text = "Welcome ${user.name} ", color = Color.White, fontSize = 28.sp)
 
             Spacer(modifier = Modifier.height(16.dp))
 
